@@ -8,6 +8,79 @@
     <script src="./js/animate-heart-canvas-browser.js"></script>
     <link rel="stylesheet" href="./css/inicio.css">
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="./js/botonscript.js"></script>
+    <!-- audio con id -->
+<audio id="bgm" src="./mp3/2022.mp3" preload="auto" loop></audio>
+
+<script>
+  // flag para recordar si el usuario autorizó música en esta sesión
+  const MUSIC_FLAG = 'bgmEnabled';
+
+  function createMusicOverlay() {
+    const o = document.createElement('div');
+    o.id = 'music-overlay';
+    o.style.cssText = `
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:rgba(0,0,0,.6); z-index:99999; color:#fff; font-family:system-ui, sans-serif;
+      text-align:center; padding:24px;
+    `;
+    o.innerHTML = `
+      <div>
+        <h2 style="margin:0 0 12px; font-size:24px;">¿Activar música?</h2>
+        <p style="margin:0 0 18px; opacity:.9">Toca el botón para reproducir el tema de fondo.</p>
+        <button id="btn-play-bgm" style="
+          padding:10px 18px; font-size:16px; border:0; border-radius:10px; cursor:pointer;
+        ">Reproducir</button>
+      </div>
+    `;
+    document.body.appendChild(o);
+    document.getElementById('btn-play-bgm').addEventListener('click', async () => {
+      const audio = document.getElementById('bgm');
+      try {
+        await audio.play();
+        sessionStorage.setItem(MUSIC_FLAG, '1');
+        o.remove();
+      } catch (e) {
+        alert('No se pudo iniciar el audio. Intenta otra vez.');
+        console.error(e);
+      }
+    });
+  }
+
+  async function tryStartBgmOnLoad() {
+    const audio = document.getElementById('bgm');
+    if (!audio) return;
+
+    // Si en esta sesión ya autorizó, intentamos reproducir de inmediato
+    const userEnabled = sessionStorage.getItem(MUSIC_FLAG) === '1';
+
+    try {
+      if (userEnabled) {
+        await audio.play(); // puede funcionar si el navegador “recuerda” interacción reciente
+      } else {
+        // Primer intento "silencioso"
+        await audio.play();
+        sessionStorage.setItem(MUSIC_FLAG, '1');
+      }
+    } catch (err) {
+      // Bloqueado: mostramos overlay para que el usuario haga click
+      createMusicOverlay();
+    }
+  }
+
+  // Reintenta al volver a la pestaña si el usuario ya habilitó
+  document.addEventListener('visibilitychange', async () => {
+    const audio = document.getElementById('bgm');
+    if (!audio) return;
+    if (document.visibilityState === 'visible' &&
+        sessionStorage.getItem(MUSIC_FLAG) === '1' &&
+        audio.paused) {
+      try { await audio.play(); } catch (e) {}
+    }
+  });
+
+  // Dispara al cargar DOM
+  document.addEventListener('DOMContentLoaded', tryStartBgmOnLoad);
+</script>
     <script>
         let queryData = getSearchData()
         console.log(queryData)
@@ -58,4 +131,5 @@
 </body>
 
 </html>
+
 
