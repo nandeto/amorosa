@@ -1,38 +1,39 @@
 {
   "player": {
-    "image": "/assets/player.png",
+    "image": "./assets/player.png",
     "hp": 4,
     "speed": 280,
     "fireRate": 220,
-    "bullet": { "image": "/assets/p_bullet.png", "speed": 520, "sound": "/assets/p_shot.wav" },
-    "deathSound": "/assets/p_die.wav"
+    "bullet": { "image": "./assets/p_bullet.png", "speed": 520, "sound": "./assets/p_shot.wav" },
+    "deathSound": "./assets/p_die.wav"
   },
 
   "enemies": [
-    { "type": "A", "image": "/assets/eA.png", "hp": 1, "speed": 90,  "fire": false, "score": 50,
-      "bullet": { "image": "/assets/eA_bullet.png", "speed": 180, "sound": "/assets/e_shot.wav" },
-      "deathSound": "/assets/eA_die.wav" },
+    { "type": "A", "image": "./assets/eA.png", "hp": 1, "speed": 90,  "fire": false, "score": 50,
+      "bullet": { "image": "./assets/eA_bullet.png", "speed": 180, "sound": "./assets/e_shot.wav" },
+      "deathSound": "./assets/eA_die.wav" },
 
-    { "type": "B", "image": "/assets/eB.png", "hp": 1, "speed": 110, "fire": true,  "score": 75,
-      "bullet": { "image": "/assets/eB_bullet.png", "speed": 200, "sound": "/assets/e_shot.wav" },
-      "deathSound": "/assets/eB_die.wav" },
+    { "type": "B", "image": "./assets/eB.png", "hp": 1, "speed": 110, "fire": true,  "score": 75,
+      "bullet": { "image": "./assets/eB_bullet.png", "speed": 200, "sound": "./assets/e_shot.wav" },
+      "deathSound": "./assets/eB_die.wav" },
 
-    { "type": "C", "image": "/assets/eC.png", "hp": 3, "speed": 60,  "fire": true,  "score": 150,
-      "bullet": { "image": "/assets/eC_bullet.png", "speed": 220, "sound": "/assets/e_shot.wav" },
-      "deathSound": "/assets/eC_die.wav" }
+    { "type": "C", "image": "./assets/eC.png", "hp": 3, "speed": 60,  "fire": true,  "score": 150,
+      "bullet": { "image": "./assets/eC_bullet.png", "speed": 220, "sound": "./assets/e_shot.wav" },
+      "deathSound": "./assets/eC_die.wav" }
   ],
 
   "powerUps": [
-    { "type": "rapid",  "image": "/assets/pu_rapid.png",  "duration": 8000 },
-    { "type": "spread", "image": "/assets/pu_spread.png", "duration": 8000 },
-    { "type": "shield", "image": "/assets/pu_shield.png", "duration": 6000 },
-    { "type": "heal",   "image": "/assets/pu_heal.png",   "amount": 1 }
+    { "type": "rapid",  "image": "./assets/pu_rapid.png",  "duration": 8000 },
+    { "type": "spread", "image": "./assets/pu_spread.png", "duration": 8000 },
+    { "type": "shield", "image": "./assets/pu_shield.png", "duration": 6000 },
+    { "type": "heal",   "image": "./assets/pu_heal.png",   "amount": 1 }
   ],
 
   "spawn": { "enemyInterval": 1000, "powerUpInterval": 6000, "maxEnemies": 5 },
   "background": { "stars": 120 },
 
-"music": { "url": "/assets/music_fondo.mp3", "volume": 0.4, "loop": true },
-"musicVictory": { "url": "/assets/music_victory.mp3", "volume": 0.7, "loop": false },
-"musicGameOver": { "url": "/assets/music_gameover.mp3", "volume": 0.6, "loop": false }
+"music": { "url": "./assets/music_fondo.mp3", "volume": 0.4, "loop": true },
+"musicVictory": { "url": "./assets/music_victory.mp3", "volume": 0.7, "loop": false },
+"musicGameOver": { "url": "./assets/music_gameover.mp3", "volume": 0.6, "loop": false }
 }
+
