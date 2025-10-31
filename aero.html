@@ -68,7 +68,7 @@
 
   async function applyConfigFromBackend(){
     try{
-      const r = await fetch('/config.json', {cache:'no-store'});
+      const r = await fetch('./config.json', {cache:'no-store'});
       if(r.ok){
         const data = await r.json();
         Object.assign(CONFIG.player, data.player||{});
@@ -269,3 +269,4 @@ function triggerWin() {
   </script>
 </body>
 </html>
+
