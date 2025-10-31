@@ -32,8 +32,9 @@
   "spawn": { "enemyInterval": 1000, "powerUpInterval": 6000, "maxEnemies": 5 },
   "background": { "stars": 120 },
 
-"music": { "url": "./assets/music_fondo.mp3", "volume": 0.4, "loop": true },
+"music": { "url": "./assets/music_fondo.mp3", "volume": 0.2, "loop": true },
 "musicVictory": { "url": "./assets/music_victory.mp3", "volume": 0.7, "loop": false },
 "musicGameOver": { "url": "./assets/music_gameover.mp3", "volume": 0.6, "loop": false }
 }
+
 
