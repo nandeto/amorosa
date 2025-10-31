@@ -15,7 +15,7 @@ $(document).ready(() => {
 
       // 🔹 Espera 1s (la duración del fade) antes de redirigir
       setTimeout(() => {
-        window.location.href = "2022.html"; // tu siguiente página
+        window.location.href = "./2022.html"; // tu siguiente página
       }, 2000);
     });
 });
