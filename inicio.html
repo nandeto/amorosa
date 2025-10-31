@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestra Historia de Amor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <script src="/js/animate-heart-canvas-browser.js?v=20230222171908"></script>
+    <link rel="stylesheet" href="./css/inicio.css">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="./js/botonscript.js"></script>
+    <script>
+        let queryData = getSearchData()
+        console.log(queryData)
+        let animateHeartCanvas = new AnimateHeartCanvas(
+            Number(queryData.hMin),
+            Number(queryData.hMax),
+            Number(queryData.countHeart),
+            Number(queryData.sizeMin),
+            Number(queryData.sizeMax),
+            queryData.bgColor,
+        )
+        function getSearchData(){
+            let searchString = location.search;
+            if (searchString){
+                let obj = {};
+                searchString = searchString.substring(1, searchString.length);
+                let tempArray = searchString.split('&');
+                tempArray.forEach(item => {
+                    obj[item.split('=')[0]] = decodeURIComponent(item.split('=')[1]);
+                });
+                return obj;
+            } else {
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container-wrapper">
+        <div class="container">
+            <h1>Nuestra Historia de Amor</h1>
+            <p>Desde el primer día hasta hoy, cada momento ha sido especial.<br>Te amo con todo mi corazón ❤️<br>Porfavor da inicio a nuestra historia<br>ㅤ</p>
+            <div class="button">
+  <div class="content">
+    <p>Inicio</p>
+  </div>
+  <div class="particles">
+    <div class="particle square red"></div>
+    <div class="particle circle green"></div>
+    <div class="particle square yellow"></div>
+    <div class="particle square red"></div>
+    <div class="particle square yellow"></div>
+    <div class="particle circle green"></div>
+    <div class="particle circle white"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

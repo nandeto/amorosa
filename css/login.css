@@ -1,0 +1,96 @@
+body {
+  font-family: "Emilys Candy", serif;
+  background-color: #ffbcbc;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 2s ease-in-out forwards;
+}
+
+/* Fade-in inicial */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Contenedor del login */
+.login-container {
+  padding: 40px;
+  max-width: 350px;
+  margin: 100px auto;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+h1 {
+  color: #ff4d6d;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #333;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus {
+  border-color: #ff4d6d;
+  box-shadow: 0px 0px 10px rgba(255, 77, 109, 0.5);
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff4d6d;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #ff1f46;
+}
+
+.login-container:hover {
+  box-shadow: 0px 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+.error-message {
+  color: red;
+  font-size: 1.1rem;
+  margin-top: 15px;
+}
+
+.success-message {
+  color: #28a745;
+  font-size: 1.3rem;
+  margin-top: 15px;
+}
+
+/* Fade-out final */
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.fade-out {
+  animation: fadeOut 2s ease-in-out forwards;
+}

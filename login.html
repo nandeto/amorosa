@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrada del romanticismo</title>
+
+    <!-- Fuente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Emilys+Candy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/login.css">
+</head>
+
+<body>
+    <script src="/js/confetti.js"></script>
+
+    <div class="login-container">
+        <h1>Ingresa tu nombre</h1>
+        <input type="text" id="username" placeholder="Tu nombre...">
+        <button onclick="login()">Entrar</button>
+        <div id="error-message" class="error-message"></div>
+    </div>
+
+    <script>
+        function startConfetti() {
+            confetti.start();
+        }
+
+        function stopConfetti() {
+            setTimeout(() => confetti.stop(), 3000);
+        }
+
+        function login() {
+            const username = document.getElementById("username").value.trim().toLowerCase();
+            const errorMessage = document.getElementById("error-message");
+            
+            const validUsers = [
+                "constanza", "conixan", "coniwao", "coniwi", "coni", "conita",
+                "coniwaopro", "conixan777"
+            ];
+
+            if (validUsers.includes(username)) {
+                errorMessage.classList.remove("error-message");
+                errorMessage.classList.add("success-message");
+                errorMessage.textContent = "¡Por fin! ❤️";
+
+                startConfetti();
+                stopConfetti();
+
+                // Espera a que el confetti se muestre antes del fade
+                setTimeout(() => {
+                    document.body.classList.add("fade-out");
+
+                    // Espera a que termine el fade antes de redirigir
+                    setTimeout(() => {
+                        localStorage.setItem("username", username);
+                        window.location.href = "inicio.html";
+                    }, 2000); // Duración del fade-out
+                }, 2500); // Tiempo para el confetti
+            } else {
+                errorMessage.textContent = "Ese nombre no. Solo Constanza my love puede ingresar.";
+                errorMessage.classList.add("error-message");
+            }
+        }
+    </script>
+</body>
+</html>

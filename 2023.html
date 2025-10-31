@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>2023</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap" rel="stylesheet">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css'><link rel="stylesheet" href="./css/2023.css">
+<script src="/js/animate-heart-canvas-browser.js?v=20230222171908"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="./js/botonscript_2023.js"></script>
+<audio autoplay loop>
+   <source src="./mp3/2023.mp3" type="audio/mpeg">
+</audio>
+<script>
+   let queryData = getSearchData()
+   console.log(queryData)
+   let animateHeartCanvas = new AnimateHeartCanvas(
+       Number(queryData.hMin),
+       Number(queryData.hMax),
+       Number(queryData.countHeart),
+       Number(queryData.sizeMin),
+       Number(queryData.sizeMax),
+       queryData.bgColor,
+   )
+   function getSearchData(){
+       let searchString = location.search;
+       if (searchString){
+           let obj = {};
+           searchString = searchString.substring(1, searchString.length);
+           let tempArray = searchString.split('&');
+           tempArray.forEach(item => {
+               obj[item.split('=')[0]] = decodeURIComponent(item.split('=')[1]);
+           });
+           return obj;
+       } else {
+           return false;
+       }
+   }
+</script>
+</head>
+<body>
+   
+<!-- partial:index.partial.html -->
+<div class="header" id="top">
+   <h1>2023 Contigo<br>❤️</h1>
+   <i class="fa fa-angle-down animated bounce"></i>
+</div>
+
+<div class="section animate">
+   <div class="middle">
+      <img src="https://i.imgur.com/biXdlyB.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>Cambios...</h2>
+         <p>2023 trajo muchos cambios. Ya no estaba en el colegio, y no podía pasar
+             tanto tiempo contigo como antes. Mi vida empezaba a tomar un rumbo nuevo, 
+             pero algo siempre estuvo claro: en ese futuro estabas tú, mi mayor prioridad. 
+             Estar contigo era lo que más quería, y hacía todo lo posible, incluso con las
+              pocas energías que me quedaban.</p>
+
+      </div>
+   </div>
+   <div class="right tiles">
+      <img src="https://i.imgur.com/gPPVsOY.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/wd3qiSB.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/h8nfb9t.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/PwTMSpv.png"referrerpolicy="no-referrer" />
+   </div>
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/tF8rfMZ.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>Nuesto Primer Bebe...</h2>
+         <p>Ese año también llegó Gato Miles a nuestras vidas. Pequeñito, tiñosito,
+             pero lleno de ternura. Tuvimos que cuidarlo mucho tiempo hasta que se 
+             volviera independiente. Todavía recuerdo esas madrugadas en las que nos 
+             despertaba pidiendo alimento y, aunque a veces costaba, hacíamos el 
+             esfuerzo de levantarnos. Gato Miles fue nuestro primer bebé, 
+             y con él aprendimos a ser un equipo, incluso en las pequeñas cosas. ❤️</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/KLzJE5K.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/NsHXhMv.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/7vM4UDE.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/nCuMfFS.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/mgeV6Z5.png"referrerpolicy="no-referrer" />
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>Declaracion...</h2>
+         <p>A pesar de todo el tiempo que pasamos juntos, nunca encontraba el
+             momento ni el valor para formalizar nuestra relación. No era porque 
+             no quisiera, sino porque tenía miedo de no estar a la altura y de decepcionarte.
+            Al final, te lo pedí, aunque sentí que el momento no fue tan 
+            especial como imaginé. Me decepcioné un poco, pero lo único 
+            que importaba era que finalmente éramos oficialmente novios. 
+            Y eso, para mí, lo hacía perfecto. ❤️</p>
+      </div>
+   </div>
+   
+   <div class="right tiles">
+      <img src="https://i.imgur.com/YgVX4wK.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/ppJlJIP.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/3eXlfhn.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/PtLBcK9.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/KAOUykE.png"  referrerpolicy="no-referrer" />
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>El Futuro...</h2>
+         <p>Estabas terminando el colegio, y yo había comenzado a trabajar. Mi mente no dejaba de imaginar este nuevo futuro, uno donde los dos estamos juntos, construyendo nuestra vida, paso a paso. Pensarlo me llenaba de ansiedad, de nervios, pero también de emoción, porque sabía que, pase lo que pase, tú estarías a mi lado.
+
+            Esa certeza me daba fuerza, me hacía soñar más grande y quererlo todo para ti. Porque no hay nada en este mundo que desee más que verte feliz, y saber que este futuro lo vamos a construir juntos me llena el corazón. ❤️</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/mvCMjjQ.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/YBEPqLj.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/YFJ56qH.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/mvGVPd2.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="footer">
+<div class="button">
+   <div class="content">
+     <p>???</p>
+   </div>
+   <div class="particles">
+     <div class="particle square red"></div>
+     <div class="particle circle green"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle square red"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle circle green"></div>
+     <div class="particle circle white"></div>
+             </div>
+         </div>
+     </div>
+
+<!-- partial -->
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="./js/2023.js"></script>
+
+</body>
+</html>

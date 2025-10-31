@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>2024</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap" rel="stylesheet">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css'><link rel="stylesheet" href="./css/2024.css">
+<script src="/js/animate-heart-canvas-browser.js?v=20230222171908"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="./js/botonscript_2024.js"></script>
+<audio autoplay loop>
+   <source src="./mp3/2024.mp3" type="audio/mpeg">
+</audio>
+<script>
+   let queryData = getSearchData()
+   console.log(queryData)
+   let animateHeartCanvas = new AnimateHeartCanvas(
+       Number(queryData.hMin),
+       Number(queryData.hMax),
+       Number(queryData.countHeart),
+       Number(queryData.sizeMin),
+       Number(queryData.sizeMax),
+       queryData.bgColor,
+   )
+   function getSearchData(){
+       let searchString = location.search;
+       if (searchString){
+           let obj = {};
+           searchString = searchString.substring(1, searchString.length);
+           let tempArray = searchString.split('&');
+           tempArray.forEach(item => {
+               obj[item.split('=')[0]] = decodeURIComponent(item.split('=')[1]);
+           });
+           return obj;
+       } else {
+           return false;
+       }
+   }
+</script>
+</head>
+<body>
+   
+<!-- partial:index.partial.html -->
+<div class="header" id="top">
+   <h1>2024 Contigo<br>❤️</h1>
+   <i class="fa fa-angle-down animated bounce"></i>
+</div>
+
+<div class="section animate">
+   <div class="middle">
+      <img src="https://i.imgur.com/QmpDUKD.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>Aprendizajes del 2024...</h2>
+         <p>El 2024 no fue uno de los mejores años, y lo reconozco con el corazón abierto. Hubo días difíciles, momentos en los que las cosas no salieron como esperábamos, y otros en los que la vida nos puso a prueba de formas que no imaginábamos. Pero también hubo instantes de calma, de alegría sincera, de risas compartidas que lograron sanar un poco las heridas. Mirando hacia atrás, me doy cuenta de que cada uno de esos momentos, los buenos y los malos, fueron parte del mismo camino que seguimos construyendo juntos.
+
+      </div>
+   </div>
+   <div class="right tiles">
+      <img src="https://i.imgur.com/IkzJyWo.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/mKp2Deo.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/VLA0qSx.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/EcjAEOO.png"referrerpolicy="no-referrer" />
+   </div>
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/49p9XEP.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>Un recuerdo en la playa...</h2>
+         <p>De todo el año, hay un momento que guardo con especial cariño: aquel viaje a la playa. Fue una de las épocas más hermosas del 2024. Sentir la brisa del mar, caminar juntos por la arena, reír sin mirar el reloj… fueron pequeñas cosas que se sintieron inmensas. Esa escapada no fue solo un descanso, fue un símbolo de nuestra libertad, de lo que somos cuando estamos lejos del ruido y las preocupaciones. Ahí entendí que la felicidad no está en los grandes planes, sino en esos instantes simples en los que solo existimos tú y yo.</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/2RiW628.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/GZRO9HY.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/8oRPCLv.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/5zKXhQe.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/n5JwXEe.png"referrerpolicy="no-referrer" />
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>El amor que permanece...</h2>
+         <p>Entre los altibajos, siempre hubo una conclusión que se repetía en 
+            silencio dentro de mí: que te sigo amando, incluso cuando las cosas
+            no son perfectas. Que mi amor por ti no depende de los días buenos ni
+            de las circunstancias favorables, sino que nace de algo más profundo, 
+            más constante. Porque incluso en los momentos en que todo parecía desordenado,
+            ahí estabas tú, dándole sentido a mi mundo. Y comprendí que el verdadero amor
+            no se mide en ausencia de problemas, sino en la capacidad de permanecer, 
+            de elegir al otro una y otra vez.</p>
+      </div>
+   </div>
+   
+   <div class="right tiles">
+      <img src="https://i.imgur.com/ect09Ny.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/OrkdFkV.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/hxDJmsY.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/UTmqAre.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/44bxxkR.png"  referrerpolicy="no-referrer" />
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>Mirando hacia adelante...</h2>
+         <p>Esa experiencia me ayudó a aclarar la mente, a comprender que a pesar de los tropiezos, sigo queriendo compartir cada año, cada viaje, cada amanecer contigo. Que el amor que siento no se desgasta con el tiempo, sino que se fortalece con cada prueba superada. El 2024 nos enseñó a resistir, pero también a valorar más los pequeños momentos. Y ahora, mientras el 2025 se abre frente a nosotros, siento que estoy listo para seguir caminando a tu lado, con más amor, más calma y más certeza que nunca: la de que tú siempre serás mi hogar. ❤️</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/jCotolf.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/zajarSL.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/kChdel9.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/Z4ml7Oo.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="footer">
+<div class="button">
+   <div class="content">
+     <p>2025</p>
+   </div>
+   <div class="particles">
+     <div class="particle square red"></div>
+     <div class="particle circle green"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle square red"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle circle green"></div>
+     <div class="particle circle white"></div>
+             </div>
+         </div>
+     </div>
+
+<!-- partial -->
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="./js/2024.js"></script>
+
+</body>
+</html>

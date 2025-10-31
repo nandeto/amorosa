@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>2022</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://public.codepenassets.com/css/normalize-5.0.0.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Delicious+Handrawn&display=swap" rel="stylesheet">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css'><link rel="stylesheet" href="./css/2022.css">
+<script src="/js/animate-heart-canvas-browser.js?v=20230222171908"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script><script  src="./js/botonscript_2022.js"></script>
+<audio autoplay loop>
+   <source src="../mp3/2022.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+   let queryData = getSearchData()
+   console.log(queryData)
+   let animateHeartCanvas = new AnimateHeartCanvas(
+       Number(queryData.hMin),
+       Number(queryData.hMax),
+       Number(queryData.countHeart),
+       Number(queryData.sizeMin),
+       Number(queryData.sizeMax),
+       queryData.bgColor,
+   )
+   function getSearchData(){
+       let searchString = location.search;
+       if (searchString){
+           let obj = {};
+           searchString = searchString.substring(1, searchString.length);
+           let tempArray = searchString.split('&');
+           tempArray.forEach(item => {
+               obj[item.split('=')[0]] = decodeURIComponent(item.split('=')[1]);
+           });
+           return obj;
+       } else {
+           return false;
+       }
+   }
+</script>
+</head>
+<body>
+   
+<!-- partial:index.partial.html -->
+<div class="header" id="top">
+   <h1>2022 Contigo<br>❤️</h1>
+   <i class="fa fa-angle-down animated bounce"></i>
+</div>
+
+<div class="section animate">
+   <div class="middle">
+      <img src="https://i.imgur.com/39bkRt5.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>El Comienzo...</h2>
+         <p>Ese día que fui a buscar globos fue la primera vez que nos vimos. Ya sentía un interés por ti,
+            aunque intentaba disimularlo. Pero ahí estabas tú, y me diste una súper ignorada que me dejó
+            pensando que no te caía bien 🥺. Admito que en ese momento me dolió un poco, pero ahora 
+            que sé lo que realmente sentiste ese día, todo eso se ha convertido en algo que me hace reír.
+            Es increible cómo, sin saberlo, ese pequeño instante fue el comienzo de algo tan grande. 💕</p>
+
+      </div>
+   </div>
+   <div class="right tiles">
+      <img src="https://i.imgur.com/SzqOJvU.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/uFvwcvN.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/4eOjANX.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/S4YZOqe.png"referrerpolicy="no-referrer" />
+   </div>
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/Eqn6lGm.png"referrerpolicy="no-referrer"/>
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>2 de Abril...</h2>
+         <p>Fue un 2 de abril, un simple “ola” que, sin saberlo, cambiaría mi vida para siempre. Los nervios y la ansiedad
+             que inundaban mi pecho cada vez que veía tu nombre en mi celular no eran nada comparados 
+             con las ganas incontrolables de hablar contigo, Con cada palabra, con cada mensaje, sentí cómo te ibas 
+            convirtiendo en mi mundo. Poco a poco, mientras te conocía, algo nuevo nació en mí, un sentimiento 
+            desconocido pero hermoso, tan intenso que me daba miedo y esperanza al mismo tiempo.</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/68ZbRwK.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/Bp0tC68.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/bUzj0z7.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/4y8256E.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/yBEzrS2.png"referrerpolicy="no-referrer" />
+   </div>
+   <div class="left title">
+      <div class="content">
+         <h2>Lo que senti...</h2>
+         <p>Y entonces lo entendí: ese sentimiento eras tú, tú eras la razón por la que mi corazón comenzó a latir diferente.
+             Por ti descubrí lo que es querer a alguien de verdad, y sin darme cuenta, simplemente… me enamoré de ti.</p>
+      </div>
+   </div>
+   
+   <div class="right tiles">
+      <img src="https://i.imgur.com/noB9Bte.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/WBq8ita.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/MPQHPfv.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/clcIQd5.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="section">
+   <div class="middle">
+      <img src="https://i.imgur.com/8lL8GZL.png"  referrerpolicy="no-referrer" />
+   </div>
+   <div class="right title">
+      <div class="content">
+         <h2>2022...</h2>
+         <p>Fue en 2022, el mejor y único año de mi etapa escolar que realmente disfruté como nunca. Y todo
+            porque estabas ahí. Cada momento se sentía especial
+            porque sabía que estarias ahi, cruzarnos una sonrisa o compartir esas conversaciones
+            que poco a poco nos acercaron más y mas.
+            Nunca imaginé que ese año no solo sería el más inolvidable, sino también el inicio de nuestra historia juntos. Mirando atrás, me doy cuenta de que cada risa, cada mirada y cada instante contigo valieron la pena, porque fueron el comienzo de lo que ahora somos.
+
+            Estar contigo hizo que un simple año se convirtiera en el más importante de mi vida. ❤️</p>
+      </div>
+   </div>
+   
+   <div class="left tiles">
+      <img src="https://i.imgur.com/BGgvOpy.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/1pvQPO3.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/6Y3CJfD.png"referrerpolicy="no-referrer" />
+      <img src="https://i.imgur.com/JDMWUSe.png"referrerpolicy="no-referrer" />
+   </div>
+   
+</div>
+
+<div class="footer">
+<div class="button">
+   <div class="content">
+     <p>2023</p>
+   </div>
+   <div class="particles">
+     <div class="particle square red"></div>
+     <div class="particle circle green"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle square red"></div>
+     <div class="particle square yellow"></div>
+     <div class="particle circle green"></div>
+     <div class="particle circle white"></div>
+             </div>
+         </div>
+     </div>
+
+<!-- partial -->
+  <script src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script><script  src="./js/2022.js"></script>
+
+</body>
+</html>
