@@ -159,7 +159,7 @@ async function playBackgroundMusic() {
   const player = new Player();
   const enemies=[]; const bullets=[]; const enemyBullets=[]; const powerUps=[];
   const WIN_SCORE = 2000; // <- puntaje para ganar
-  const REDIRECT_URL = '/carga2.html'; // <- cambia aquí tu HTML de destino
+  const REDIRECT_URL = './carga2.html'; // <- cambia aquí tu HTML de destino
   let lastEnemySpawn=0, lastPUSpawn=0; let score=0; let gameOver=false; let hasWon=false; let lt=performance.now();
   let winBtn = null; // se crea al ganar
 
@@ -269,4 +269,5 @@ function triggerWin() {
   </script>
 </body>
 </html>
+
 
