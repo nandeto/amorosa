@@ -43,6 +43,17 @@
 </head>
 <body>
   <canvas id="game" width="480" height="720" aria-label="Juego tipo Aero Fighters"></canvas>
+  <div id="tapToStart" style="
+  position:fixed; inset:0;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  background:rgba(0,0,0,0.7); color:white;
+  font-size:1.4em; text-align:center;
+  z-index:9999;
+">
+  <p>🎮 Toca para comenzar</p>
+  <p style="font-size:0.8em; opacity:0.7">(Activa el sonido y los controles)</p>
+</div>
+
   <div class="mobile-controls" id="mctl" aria-hidden="true">
     <div id="stickArea" aria-label="Joystick táctil" role="application"><div id="stick"></div></div>
     <button id="btnFire" type="button" aria-label="Disparar">FIRE</button>
@@ -299,7 +310,14 @@ async function playBackgroundMusic() {
   function showRestartButton(){ const b=document.getElementById('btnRestart'); if(b){ b.style.display='inline-block'; } }
   function hideRestartButton(){ const b=document.getElementById('btnRestart'); if(b){ b.style.display='none'; } }
   document.getElementById('btnRestart')?.addEventListener('click', ()=> restart());
+const overlay = document.getElementById('tapToStart');
 
+overlay.addEventListener('pointerdown', async () => {
+  overlay.remove();
+  unlockAudio();         // para Safari
+  await playBackgroundMusic(); 
+  loop();                // inicia el juego solo después del toque
+});
   // --- inicio ---
   (async function start(){
     await applyConfigFromBackend();
