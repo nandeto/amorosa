@@ -137,29 +137,51 @@
 
  // ===== Música de fondo / victoria / game over =====
 let bgMusic = null;
+let audioUnlocked = false;
 
-function playMusic(cfg) {
-  if (!cfg || !cfg.url) return null;
-  const a = new Audio(cfg.url);
-  a.loop = !!cfg.loop;
-  a.volume = cfg.volume ?? 0.5;
-  a.play().catch(()=>{}); // por si el navegador bloquea autoplay
-  return a;
-}
-
-async function playBackgroundMusic() {
-  if (!CONFIG.music || !CONFIG.music.url) return;
-  if (!bgMusic) bgMusic = new Audio(CONFIG.music.url);
-  bgMusic.loop = CONFIG.music.loop !== false;
-  bgMusic.volume = CONFIG.music.volume ?? 0.5;
+async function playBackgroundMusic(){
+  if(!CONFIG.music || !CONFIG.music.url) return;
+  if(!bgMusic){
+    bgMusic = new Audio(CONFIG.music.url);
+    bgMusic.loop = CONFIG.music.loop !== false;
+    bgMusic.volume = CONFIG.music.volume ?? 0.5;
+  }
   try {
     await bgMusic.play();
-  } catch (e) {
-    // Requiere interacción del usuario (clic/tecla)
-    const kick = () => bgMusic.play().catch(()=>{});
-    document.body.addEventListener('click', kick, { once: true });
-    document.body.addEventListener('keydown', kick, { once: true });
+    audioUnlocked = true;
+  } catch(e) {
+    // Espera al primer gesto del usuario
+    unlockAudio();
   }
+}
+
+function unlockAudio(){
+  if (audioUnlocked) return;
+
+  const kick = async () => {
+    if (!bgMusic) return;
+    try {
+      await bgMusic.play();
+      audioUnlocked = true;
+      removeUnlockers();
+    } catch(e) { /* seguirá esperando otro gesto */ }
+  };
+
+  const removeUnlockers = () => {
+    document.removeEventListener('pointerdown', kick, {capture:true});
+    document.removeEventListener('keydown', kick, {capture:true});
+    document.removeEventListener('touchstart', kick, {capture:true});
+  };
+
+  // Usa pointerdown para cubrir mouse y touch; añade keydown por si usan teclado
+  document.addEventListener('pointerdown', kick, {once:true, capture:true});
+  document.addEventListener('keydown', kick, {once:true, capture:true});
+  document.addEventListener('touchstart', kick, {once:true, capture:true});
+
+  // Reintento cuando la página vuelve a estar visible (iOS a veces pausa)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && !audioUnlocked) kick();
+  }, {once:true});
 }
 
   // ---------- Entidades ----------
@@ -192,7 +214,7 @@ async function playBackgroundMusic() {
 
   // ---------- Estado ----------
   const player=new Player(); const enemies=[]; const bullets=[]; const enemyBullets=[]; const powerUps=[];
-  const WIN_SCORE=200; const REDIRECT_URL='./2024.html'; // <- relativo
+  const WIN_SCORE=1200; const REDIRECT_URL='./carga2.html'; // <- relativo
   let lastEnemySpawn=0,lastPUSpawn=0,score=0,gameOver=false,hasWon=false,lt=performance.now();
   let winBtn=null; const btnRestart = document.getElementById('btnRestart');
 
@@ -206,6 +228,9 @@ async function playBackgroundMusic() {
   C.addEventListener('touchstart',e=>{ const t=e.changedTouches[0]; touchId=t.identifier; moveTo(t.clientX,t.clientY); if(e.touches.length>1) player.shoot();},{passive:true});
   C.addEventListener('touchmove',e=>{ for(const t of e.changedTouches){ if(t.identifier===touchId) moveTo(t.clientX,t.clientY);} },{passive:true});
   C.addEventListener('touchend',()=>{ touchId=null; });
+  C.addEventListener('touchstart', ()=> unlockAudio(), {passive:true});
+  C.addEventListener('pointerdown', ()=> unlockAudio(), {passive:true});
+
 
   // ---------- Controles en pantalla (joystick + FIRE) ----------
   const joy = {active:false,sx:0,sy:0,dx:0,dy:0};
@@ -222,6 +247,8 @@ async function playBackgroundMusic() {
   btnFire?.addEventListener('touchstart', e=>{ e.preventDefault(); startFire(); }, {passive:false});
   btnFire?.addEventListener('touchend',   e=>{ e.preventDefault(); stopFire(); },   {passive:false});
   btnFire?.addEventListener('mousedown',  ()=> startFire());
+  btnFire?.addEventListener('touchstart', e=>{ e.preventDefault(); unlockAudio(); startFire(); }, {passive:false});
+  btnFire?.addEventListener('mousedown',  ()=>{ unlockAudio(); startFire(); });
   addEventListener('mouseup', ()=> stopFire());
   addEventListener('touchcancel', ()=> stopFire());
 
@@ -229,6 +256,13 @@ async function playBackgroundMusic() {
   stickArea?.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; joy.active=true; joy.sx=t.clientX; joy.sy=t.clientY; joy.dx=0; joy.dy=0; moveStick(0,0); e.preventDefault(); }, {passive:false});
   stickArea?.addEventListener('touchmove', e=>{ const t=e.changedTouches[0]; const dx=t.clientX-joy.sx, dy=t.clientY-joy.sy; const R=80; const mag=Math.hypot(dx,dy); const cl=mag>R? R/mag:1; joy.dx=dx*cl; joy.dy=dy*cl; moveStick(joy.dx,joy.dy); e.preventDefault(); }, {passive:false});
   stickArea?.addEventListener('touchend',  ()=>{ joy.active=false; joy.dx=0; joy.dy=0; moveStick(0,0); }, {passive:false});
+  stickArea?.addEventListener('touchstart', e=>{
+  unlockAudio();
+  const t=e.changedTouches[0];
+  joy.active=true; joy.sx=t.clientX; joy.sy=t.clientY; joy.dx=0; joy.dy=0;
+  moveStick(0,0);
+  e.preventDefault();
+  }, {passive:false});
 
   function moveTo(x,y){ const r=C.getBoundingClientRect(); player.x=clamp(x-r.left-player.w/2,4,W-player.w-4); player.y=clamp(y-r.top-player.h/2,4,H-player.h-60); }
 
@@ -293,7 +327,7 @@ async function playBackgroundMusic() {
   function restart(){ enemies.length=0; bullets.length=0; enemyBullets.length=0; powerUps.length=0; score=0; player.resetStats(); player.x=W/2-20; player.y=H-110; gameOver=false; hasWon=false; if(winBtn) winBtn.classList.remove('show'); hideRestartButton(); playBackgroundMusic(); }
 
   function triggerWin(){ hasWon=true; if(bgMusic) bgMusic.pause(); playMusic(CONFIG.musicVictory); ensureWinButton(); }
-  function ensureWinButton(){ if(winBtn) return; winBtn = document.createElement('a'); winBtn.id='winBtn'; winBtn.className='winbtn'; winBtn.textContent='Continuar'; winBtn.href = './2024.html'; document.body.appendChild(winBtn); } // relativo
+  function ensureWinButton(){ if(winBtn) return; winBtn = document.createElement('a'); winBtn.id='winBtn'; winBtn.className='winbtn'; winBtn.textContent='Continuar'; winBtn.href = './carga2.html'; document.body.appendChild(winBtn); } // relativo
 
   function showRestartButton(){ const b=document.getElementById('btnRestart'); if(b){ b.style.display='inline-block'; } }
   function hideRestartButton(){ const b=document.getElementById('btnRestart'); if(b){ b.style.display='none'; } }
