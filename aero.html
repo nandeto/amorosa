@@ -3,43 +3,41 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Juego con Amor</title>
+  <title>Aero Fighters – Mini (Power‑Ups + Win Screen + Mobile)</title>
   <style>
     :root{ --bg:#ffbcbc; --ui:#d47272; --text:#e6f2ff; --hud:#0a1430; }
     html,body{height:100%;margin:0;font-family:system-ui,Segoe UI,Roboto,Arial}
     body{display:grid;place-items:center;background:radial-gradient(1200px 800px at 50% 120%, #ff5c5c 0%, var(--bg) 60%); animation: fadeIn 2s ease-in-out forwards;}
-    @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     canvas{background:linear-gradient(#ff82bc,#ff44ab);border:2px solid var(--ui);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    .hint{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);color:#bcd;background:rgba(48, 17, 36, 0.55);border:1px solid #ff79c3;padding:6px 10px;border-radius:8px;font-size:12px}
+    .hint{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);color:#fff;background:rgba(48,17,36,.55);border:1px solid #ff79c3;padding:6px 10px;border-radius:8px;font-size:12px}
     .winbtn{position:fixed;left:50%;top:56%;transform:translate(-50%,-50%);padding:12px 18px;border-radius:10px;border:1px solid #ff008c;background:linear-gradient(#ff82bc,#ff44ab);color:#eaf5ff;font-weight:800;text-decoration:none;letter-spacing:.3px;box-shadow:0 10px 25px rgba(0,0,0,.35);display:none}
     .winbtn.show{display:inline-block}
-    
+    #btnRestart{top:65%;}
+    /* Oculto por defecto, visible sólo en móviles/tablets */
+    .mobile-controls{display:none}
+    @media (pointer:coarse), (max-width: 820px){
+      .mobile-controls{position:fixed;left:0;right:0;bottom:12px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;user-select:none;touch-action:none;gap:16px}
+      #stickArea{width:140px;height:140px;border:2px solid #ff79c3;border-radius:50%;background:rgba(255,255,255,0.08);position:relative}
+      #stick{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.25);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+      #btnFire{width:88px;height:88px;border-radius:50%;border:2px solid #ff79c3;background:linear-gradient(#ff82bc,#ff44ab);color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+    }
   </style>
 </head>
 <body>
   <canvas id="game" width="480" height="720" aria-label="Juego tipo Aero Fighters"></canvas>
-  <div class="hint">WASD/←↑→↓ para mover, Espacio para disparar, R reinicia. Power‑ups activos arriba a la derecha.</div>
+  <div class="mobile-controls" id="mctl" aria-hidden="true">
+    <div id="stickArea" aria-label="Joystick táctil" role="application"><div id="stick"></div></div>
+    <button id="btnFire" type="button" aria-label="Disparar">FIRE</button>
+  </div>
+  <button id="btnRestart" type="button" class="winbtn" style="display:none">Reintentar 🔁</button>
+  <div class="hint">Teclado: WASD/←↑→↓, Espacio dispara, R reinicia · Móvil: joystick + botón FIRE</div>
 
   <script>
-  /*
-   * ✈️ Aero Fighters – Mini (con power‑ups, balas y sonidos personalizables + pantalla de victoria)
-   *
-   * 🔒 Personalización por “backend”:
-   *   - Todo se carga desde /config.json (o la URL que definas) y no hay panel visible.
-   *   - Si quieres ocultar assets de Network, sirve URLs firmadas o tras un endpoint protegido.
-   *
-   * Gana al llegar a 2500 puntos: se muestra el avión del jugador en grande, el texto "¡Lo lograste!"
-   * y un botón para ir a otro HTML.
-   */
-
   const C = document.getElementById('game');
   const ctx = C.getContext('2d');
   const W = C.width, H = C.height;
 
-  // --- Default/fallback config (por si falla cargar config.json) ---
   const DEFAULTS = {
     player:{hp:3,speed:280,fireRate:220, image:null, bullet:{image:null,speed:520,sound:null}, deathSound:null},
     enemies:[
@@ -57,9 +55,7 @@
     background:{stars:120}
   };
 
-  const CONFIG = JSON.parse(JSON.stringify(DEFAULTS)); // clone
-
-  // --- helpers ---
+  const CONFIG = JSON.parse(JSON.stringify(DEFAULTS));
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   function setTimer(obj,key,dur,off){ clearTimeout(obj.powerTimers?.[key]); if(!obj.powerTimers) obj.powerTimers={}; obj.powerTimers[key]=setTimeout(off, dur); }
   function loadImage(url){ return new Promise(res=>{ if(!url){res(null);return;} const i=new Image(); i.crossOrigin='anonymous'; i.onload=()=>res(i); i.onerror=()=>res(null); i.src=url; }); }
@@ -68,7 +64,7 @@
 
   async function applyConfigFromBackend(){
     try{
-      const r = await fetch('./config.json', {cache:'no-store'});
+      const r = await fetch('/config.json', {cache:'no-store'});
       if(r.ok){
         const data = await r.json();
         Object.assign(CONFIG.player, data.player||{});
@@ -77,11 +73,10 @@
         Object.assign(CONFIG.spawn, data.spawn||{});
         Object.assign(CONFIG.background, data.background||{});
         CONFIG.music         = data.music         || CONFIG.music;
-CONFIG.musicVictory  = data.musicVictory  || CONFIG.musicVictory;
+        CONFIG.musicVictory  = data.musicVictory  || CONFIG.musicVictory;
       }
-    }catch(e){ /* fallback DEFAULTS */ }
+    }catch(e){}
 
-    // Preload
     const loaders=[];
     loaders.push(loadImage(CONFIG.player.image).then(img=>{CONFIG.player.image=img;}));
     loaders.push(loadImage(CONFIG.player.bullet && CONFIG.player.bullet.image).then(img=>{ if(CONFIG.player.bullet) CONFIG.player.bullet.image=img; }));
@@ -94,102 +89,90 @@ CONFIG.musicVictory  = data.musicVictory  || CONFIG.musicVictory;
       loaders.push(loadSound(e.bullet && e.bullet.sound).then(a=>{ if(e.bullet) e.bullet.sound=a; }));
       loaders.push(loadSound(e.deathSound).then(a=>{ e.deathSound=a; }));
     });
-
     CONFIG.powerUps.forEach(p=>{ loaders.push(loadImage(p.image).then(img=>{ p.image=img; })); });
-
     await Promise.all(loaders);
   }
-// ===== Música de fondo / victoria / game over =====
-let bgMusic = null;
 
-function playMusic(cfg) {
-  if (!cfg || !cfg.url) return null;
-  const a = new Audio(cfg.url);
-  a.loop = !!cfg.loop;
-  a.volume = cfg.volume ?? 0.5;
-  a.play().catch(()=>{}); // por si el navegador bloquea autoplay
-  return a;
-}
+  // Música (sin sonido de derrota)
+  let bgMusic = null;
+  function playMusic(cfg){ if(!cfg || !cfg.url) return null; const a=new Audio(cfg.url); a.loop=!!cfg.loop; a.volume=cfg.volume??0.5; a.play().catch(()=>{}); return a; }
+  async function playBackgroundMusic(){ if(!CONFIG.music || !CONFIG.music.url) return; if(!bgMusic) bgMusic=new Audio(CONFIG.music.url); bgMusic.loop=CONFIG.music.loop!==false; bgMusic.volume=CONFIG.music.volume??0.5; try{await bgMusic.play();}catch(e){const kick=()=>bgMusic.play().catch(()=>{});document.body.addEventListener('click',kick,{once:true});document.body.addEventListener('keydown',kick,{once:true});} }
 
-async function playBackgroundMusic() {
-  if (!CONFIG.music || !CONFIG.music.url) return;
-  if (!bgMusic) bgMusic = new Audio(CONFIG.music.url);
-  bgMusic.loop = CONFIG.music.loop !== false;
-  bgMusic.volume = CONFIG.music.volume ?? 0.5;
-  try {
-    await bgMusic.play();
-  } catch (e) {
-    // Requiere interacción del usuario (clic/tecla)
-    const kick = () => bgMusic.play().catch(()=>{});
-    document.body.addEventListener('click', kick, { once: true });
-    document.body.addEventListener('keydown', kick, { once: true });
-  }
-}
-
-  // ========= Entities =========
-  class Entity{ constructor(x,y,w,h){ this.x=x; this.y=y; this.w=w; this.h=h; this.dead=false; } get cx(){return this.x+this.w/2} get cy(){return this.y+this.h/2} intersects(o){return !(this.x+this.w<o.x||this.x>o.x+o.w||this.y+this.h<o.y||this.y>o.y+o.h)} }
-
-  class Player extends Entity{
-    constructor(){ super(W/2-20,H-110,40,48); this.resetStats(); this.lastShot=0; this.shieldUntil=0; this.powerTimers={}; }
-    resetStats(){ this.hp = CONFIG.player.hp||3; this.speed = CONFIG.player.speed||280; this.baseFireRate = CONFIG.player.fireRate||220; this.fireRate=this.baseFireRate; this.spread=false; }
-    draw(){ drawPlane(this, CONFIG.player.image, '#4ec9f0', true); if(this.hasShield()){ drawShield(this); } }
+  class Entity{ constructor(x,y,w,h){ this.x=x; this.y=y; this.w=w; this.h=h; this.dead=false;} get cx(){return this.x+this.w/2} get cy(){return this.y+this.h/2} intersects(o){return !(this.x+this.w<o.x||this.x>o.x+o.w||this.y+this.h<o.y||this.y>o.y+o.h)} }
+  class Player extends Entity{ constructor(){ super(W/2-20,H-110,40,48); this.resetStats(); this.lastShot=0; this.shieldUntil=0; this.powerTimers={}; }
+    resetStats(){ this.hp=CONFIG.player.hp||3; this.speed=CONFIG.player.speed||280; this.baseFireRate=CONFIG.player.fireRate||220; this.fireRate=this.baseFireRate; this.spread=false; }
+    draw(){ drawPlane(this, CONFIG.player.image,'#4ec9f0',true); if(this.hasShield()) drawShield(this); }
     hasShield(){ return performance.now()<this.shieldUntil; }
-    shoot(){ const t=performance.now(); if(t-this.lastShot < this.fireRate) return; this.lastShot=t; const pb = CONFIG.player.bullet||{speed:520}; play(pb.sound);
-      if(this.spread){ bullets.push(new BulletImg(this.cx-3,this.y-10,6,16,-(pb.speed||520), false, pb.image, 0)); bullets.push(new BulletImg(this.cx-3,this.y-6,6,16,-(pb.speed||520), false, pb.image, -0.18)); bullets.push(new BulletImg(this.cx-3,this.y-6,6,16,-(pb.speed||520), false, pb.image, 0.18)); } else { bullets.push(new BulletImg(this.cx-3,this.y-10,6,16,-(pb.speed||520), false, pb.image, 0)); } }
-    update(dt){ let vx=0, vy=0; if(keys['ArrowLeft']||keys['a']) vx=-1; if(keys['ArrowRight']||keys['d']) vx+=1; if(keys['ArrowUp']||keys['w']) vy=-1; if(keys['ArrowDown']||keys['s']) vy+=1; this.x = clamp(this.x + vx*this.speed*dt, 4, W-this.w-4); this.y = clamp(this.y + vy*this.speed*dt, 4, H-this.h-60); }
-    applyPowerUp(p){ switch(p.type){ case 'rapid': this.fireRate = Math.max(80, (CONFIG.player.fireRate||220)*0.45); setTimer(this,'rapid',p.duration||8000,()=>this.fireRate=this.baseFireRate); break; case 'spread': this.spread = true; setTimer(this,'spread',p.duration||8000,()=>this.spread=false); break; case 'shield': this.shieldUntil = performance.now() + (p.duration||6000); break; case 'heal': this.hp = Math.min((CONFIG.player.hp||3), this.hp + (p.amount||1)); break; } }
+    shoot(){ const t=performance.now(); if(t-this.lastShot<this.fireRate) return; this.lastShot=t; const pb=CONFIG.player.bullet||{speed:520}; play(pb.sound); if(this.spread){ bullets.push(new BulletImg(this.cx-3,this.y-10,6,16,-(pb.speed||520),false,pb.image,0)); bullets.push(new BulletImg(this.cx-3,this.y-6,6,16,-(pb.speed||520),false,pb.image,-0.18)); bullets.push(new BulletImg(this.cx-3,this.y-6,6,16,-(pb.speed||520),false,pb.image,0.18)); } else { bullets.push(new BulletImg(this.cx-3,this.y-10,6,16,-(pb.speed||520),false,pb.image,0)); } }
+    update(dt){ let vx=0,vy=0; if(keys['ArrowLeft']||keys['a']) vx=-1; if(keys['ArrowRight']||keys['d']) vx+=1; if(keys['ArrowUp']||keys['w']) vy=-1; if(keys['ArrowDown']||keys['s']) vy+=1; this.x=clamp(this.x+vx*this.speed*dt,4,W-this.w-4); this.y=clamp(this.y+vy*this.speed*dt,4,H-this.h-60); }
+    applyPowerUp(p){ switch(p.type){ case 'rapid': this.fireRate=Math.max(80,(CONFIG.player.fireRate||220)*0.45); setTimer(this,'rapid',p.duration||8000,()=>this.fireRate=this.baseFireRate); break; case 'spread': this.spread=true; setTimer(this,'spread',p.duration||8000,()=>this.spread=false); break; case 'shield': this.shieldUntil=performance.now()+(p.duration||6000); break; case 'heal': this.hp=Math.min((CONFIG.player.hp||3),this.hp+(p.amount||1)); break; } }
   }
 
-  class Enemy extends Entity{
-    constructor(spec){ super(Math.random()*(W-40), -60, 40, 40); this.spec=spec; this.hp=spec.hp; this.vy=spec.speed; this.lastShot=0; }
-    draw(){ drawPlane(this, this.spec.image, this.spec.color||'#88e', false); }
-    update(dt){ this.y += this.vy*dt; if(this.y>H+60) this.dead=true; if(this.spec.fire && Math.random()<0.01){ const bSpec=this.spec.bullet||{}; play(bSpec.sound); enemyBullets.push(new BulletImg(this.cx-3,this.y+this.h,6,16,(bSpec.speed||180), true, bSpec.image, 0)); } }
+  class Enemy extends Entity{ constructor(spec){ super(Math.random()*(W-40),-60,40,40); this.spec=spec; this.hp=spec.hp; this.vy=spec.speed; }
+    draw(){ drawPlane(this,this.spec.image,this.spec.color||'#88e',false); }
+    update(dt){ this.y+=this.vy*dt; if(this.y>H+60) this.dead=true; if(this.spec.fire&&Math.random()<0.01){ const bSpec=this.spec.bullet||{}; play(bSpec.sound); enemyBullets.push(new BulletImg(this.cx-3,this.y+this.h,6,16,(bSpec.speed||180),true,bSpec.image,0)); } }
   }
+  class BulletImg extends Entity{ constructor(x,y,w,h,vy,isEnemy,img,angle){ super(x,y,w,h); this.vy=vy; this.isEnemy=isEnemy; this.img=img; this.angle=angle||0; this.vx=Math.sin(this.angle)*Math.abs(this.vy);} draw(){ if(this.img){ ctx.save(); ctx.translate(this.x+this.w/2,this.y+this.h/2); ctx.rotate(this.isEnemy?0:-Math.PI/2); ctx.drawImage(this.img,-this.w/2,-this.h/2,this.w,this.h); ctx.restore(); } else { ctx.fillStyle=this.isEnemy?'#ffa86b':'#6cf'; ctx.fillRect(this.x,this.y,this.w,this.h);} } update(dt){ this.x+=this.vx*dt*0.25; this.y+=this.vy*dt; if(this.y<-40||this.y>H+40||this.x<-40||this.x>W+40) this.dead=true; } }
+  class PowerUp extends Entity{ constructor(spec){ super(Math.random()*(W-28),-32,28,28); this.spec=spec; this.vy=90; } draw(){ if(this.spec.image) ctx.drawImage(this.spec.image,this.x,this.y,this.w,this.h); else drawPUFallback(this); } update(dt){ this.y+=this.vy*dt; if(this.y>H+40) this.dead=true; } }
 
-  class BulletImg extends Entity{ constructor(x,y,w,h,vy,isEnemy,img,angle){ super(x,y,w,h); this.vy=vy; this.isEnemy=isEnemy; this.img=img; this.angle=angle||0; this.vx = Math.sin(this.angle)*Math.abs(this.vy); } draw(){ if(this.img){ ctx.save(); ctx.translate(this.x+this.w/2,this.y+this.h/2); ctx.rotate(this.isEnemy?0: -Math.PI/2); ctx.drawImage(this.img,-this.w/2,-this.h/2,this.w,this.h); ctx.restore(); } else { ctx.fillStyle=this.isEnemy?'#ffa86b':'#6cf'; ctx.fillRect(this.x,this.y,this.w,this.h);} } update(dt){ this.x += this.vx*dt*0.25; this.y += this.vy*dt; if(this.y<-40||this.y>H+40||this.x<-40||this.x>W+40) this.dead=true; } }
+  function drawPlane(ent,img,color,isPlayer){ if(img){ ctx.drawImage(img,ent.x,ent.y,ent.w,ent.h); return;} ctx.save(); ctx.translate(ent.x,ent.y); ctx.fillStyle=color||(isPlayer?'#4ec9f0':'#88e'); ctx.strokeStyle='#123'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(ent.w*0.5,0); ctx.lineTo(ent.w,ent.h*0.65); ctx.lineTo(ent.w*0.7,ent.h*0.65); ctx.lineTo(ent.w*0.5,ent.h); ctx.lineTo(ent.w*0.3,ent.h*0.65); ctx.lineTo(0,ent.h*0.65); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle=isPlayer?'#9df':'#cfe8ff'; ctx.fillRect(ent.w*0.42,ent.h*0.2,ent.w*0.16,ent.h*0.22); ctx.restore(); }
+  function drawShield(p){ ctx.save(); ctx.globalAlpha=0.35; ctx.fillStyle='#6ff'; ctx.beginPath(); ctx.arc(p.cx,p.cy,Math.max(p.w,p.h)*0.8,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+  function drawPUFallback(pu){ ctx.save(); ctx.translate(pu.x,pu.y); ctx.fillStyle='#f7d774'; ctx.strokeStyle='#6a5300'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(pu.w/2,pu.h/2,pu.w/2,0,Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore(); }
 
-  class PowerUp extends Entity{ constructor(spec){ super(Math.random()*(W-28), -32, 28, 28); this.spec=spec; this.vy=90; } draw(){ if(this.spec.image){ ctx.drawImage(this.spec.image, this.x, this.y, this.w, this.h); } else { drawPUFallback(this); } } update(dt){ this.y += this.vy*dt; if(this.y>H+40) this.dead=true; } }
+  // Estado principal
+  const player=new Player(); const enemies=[]; const bullets=[]; const enemyBullets=[]; const powerUps=[];
+  const WIN_SCORE=200; const REDIRECT_URL='/2024.html';
+  let lastEnemySpawn=0,lastPUSpawn=0,score=0,gameOver=false,hasWon=false,lt=performance.now();
+  let winBtn=null; const btnRestart = document.getElementById('btnRestart');
 
-  // ========= Drawing helpers =========
-  function drawPlane(ent, img, color, isPlayer){ if(img){ ctx.drawImage(img, ent.x, ent.y, ent.w, ent.h); return; } ctx.save(); ctx.translate(ent.x, ent.y); ctx.fillStyle=color|| (isPlayer? '#4ec9f0':'#88e'); ctx.strokeStyle='#123'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(ent.w*0.5, 0); ctx.lineTo(ent.w, ent.h*0.65); ctx.lineTo(ent.w*0.7, ent.h*0.65); ctx.lineTo(ent.w*0.5, ent.h); ctx.lineTo(ent.w*0.3, ent.h*0.65); ctx.lineTo(0, ent.h*0.65); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = isPlayer? '#9df' : '#cfe8ff'; ctx.fillRect(ent.w*0.42, ent.h*0.2, ent.w*0.16, ent.h*0.22); ctx.restore(); }
-  function drawShield(p){ ctx.save(); ctx.globalAlpha=0.35; ctx.fillStyle='#6ff'; ctx.beginPath(); ctx.arc(p.cx, p.cy, Math.max(p.w,p.h)*0.8, 0, Math.PI*2); ctx.fill(); ctx.restore(); }
-  function drawPUFallback(pu){ ctx.save(); ctx.translate(pu.x,pu.y); ctx.fillStyle='#f7d774'; ctx.strokeStyle='#6a5300'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(pu.w/2,pu.h/2, pu.w/2, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.restore(); }
+  // Entrada por teclado
+  const keys={}; addEventListener('keydown',e=>{ keys[e.key]=true; if(e.key===' ') player.shoot(); if(e.key.toLowerCase()==='r'&&gameOver) restart(); }); addEventListener('keyup',e=>{ keys[e.key]=false; });
 
-  // ========= Game State =========
-  const player = new Player();
-  const enemies=[]; const bullets=[]; const enemyBullets=[]; const powerUps=[];
-  const WIN_SCORE = 2000; // <- puntaje para ganar
-  const REDIRECT_URL = './carga2.html'; // <- cambia aquí tu HTML de destino
-  let lastEnemySpawn=0, lastPUSpawn=0; let score=0; let gameOver=false; let hasWon=false; let lt=performance.now();
-  let winBtn = null; // se crea al ganar
+  // Controles táctiles base (arrastre sobre el canvas)
+  let touchId=null; C.addEventListener('touchstart',e=>{ const t=e.changedTouches[0]; touchId=t.identifier; moveTo(t.clientX,t.clientY); if(e.touches.length>1) player.shoot();},{passive:true}); C.addEventListener('touchmove',e=>{ for(const t of e.changedTouches){ if(t.identifier===touchId) moveTo(t.clientX,t.clientY);} },{passive:true}); C.addEventListener('touchend',()=>{ touchId=null; });
 
-  // ========= Input =========
-  const keys={}; addEventListener('keydown', e=>{ keys[e.key]=true; if(e.key===' ') player.shoot(); if(e.key.toLowerCase()==='r'&&gameOver) restart(); });
-  addEventListener('keyup', e=>{ keys[e.key]=false; });
+  // Controles en pantalla (joystick + FIRE)
+  const joy = {active:false,sx:0,sy:0,dx:0,dy:0};
+  const stickArea = document.getElementById('stickArea');
+  const stick = document.getElementById('stick');
+  const btnFire = document.getElementById('btnFire');
+  let fireTimer=null;
 
-  // Simple touch controls
-  let touchId=null; C.addEventListener('touchstart',e=>{ const t=e.changedTouches[0]; touchId=t.identifier; moveTo(t.clientX,t.clientY); if(e.touches.length>1) player.shoot(); },{passive:true});
-  C.addEventListener('touchmove',e=>{ for(const t of e.changedTouches){ if(t.identifier===touchId) moveTo(t.clientX,t.clientY); } },{passive:true});
-  C.addEventListener('touchend',()=>{ touchId=null; });
+  function moveStick(dx,dy){ if(!stick) return; stick.style.transform=`translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; }
+  function startFire(){ if(fireTimer) return; fireTimer=setInterval(()=>player.shoot(), Math.max(80, (CONFIG.player.fireRate||220))); }
+  function stopFire(){ if(fireTimer){ clearInterval(fireTimer); fireTimer=null; } }
+
+  btnFire?.addEventListener('touchstart', e=>{ e.preventDefault(); startFire(); }, {passive:false});
+  btnFire?.addEventListener('touchend', e=>{ e.preventDefault(); stopFire(); }, {passive:false});
+  btnFire?.addEventListener('mousedown', ()=>startFire());
+  addEventListener('mouseup', stopFire);
+
+  stickArea?.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; joy.active=true; joy.sx=t.clientX; joy.sy=t.clientY; joy.dx=0; joy.dy=0; moveStick(0,0); e.preventDefault(); }, {passive:false});
+  stickArea?.addEventListener('touchmove', e=>{ const t=e.changedTouches[0]; const dx=t.clientX-joy.sx, dy=t.clientY-joy.sy; const R=60; const mag=Math.hypot(dx,dy); const cl=mag>R? R/mag:1; joy.dx=dx*cl; joy.dy=dy*cl; moveStick(joy.dx,joy.dy); e.preventDefault(); }, {passive:false});
+  stickArea?.addEventListener('touchend', ()=>{ joy.active=false; joy.dx=0; joy.dy=0; moveStick(0,0); }, {passive:false});
+
   function moveTo(x,y){ const r=C.getBoundingClientRect(); player.x=clamp(x-r.left-player.w/2,4,W-player.w-4); player.y=clamp(y-r.top-player.h/2,4,H-player.h-60); }
 
-  // ========= Loop =========
-  function loop(){ const nt=performance.now(); const dt=(nt-lt)/1000; lt=nt; if(!gameOver && !hasWon){ update(dt); } draw(); requestAnimationFrame(loop); }
+  function loop(){ const nt=performance.now(); const dt=(nt-lt)/1000; lt=nt; if(!gameOver&&!hasWon) update(dt); draw(); requestAnimationFrame(loop); }
 
   function update(dt){
     const t=performance.now();
-    // spawn enemigos
-    if(t-lastEnemySpawn>(CONFIG.spawn.enemyInterval||900) && enemies.length<(CONFIG.spawn.maxEnemies||20)){
-      lastEnemySpawn=t; const spec = CONFIG.enemies[Math.random()<0.5?0:(Math.random()<0.7?1:2)]; enemies.push(new Enemy(spec)); }
-    // spawn powerups
+    if(t-lastEnemySpawn>(CONFIG.spawn.enemyInterval||900)&&enemies.length<(CONFIG.spawn.maxEnemies||20)){
+      lastEnemySpawn=t; const spec=CONFIG.enemies[Math.random()<0.5?0:(Math.random()<0.7?1:2)]; enemies.push(new Enemy(spec)); }
     if(t-lastPUSpawn>(CONFIG.spawn.powerUpInterval||6000)){
-      lastPUSpawn=t; const spec = CONFIG.powerUps[Math.floor(Math.random()*CONFIG.powerUps.length)]; powerUps.push(new PowerUp(spec)); }
+      lastPUSpawn=t; const spec=CONFIG.powerUps[Math.floor(Math.random()*CONFIG.powerUps.length)]; powerUps.push(new PowerUp(spec)); }
 
     player.update(dt);
+    // Movimiento analógico del joystick
+    if (joy.active){
+      player.x = clamp(player.x + (joy.dx/60) * player.speed * dt, 4, W-player.w-4);
+      player.y = clamp(player.y + (joy.dy/60) * player.speed * dt, 4, H-player.h-60);
+    }
+
     bullets.forEach(b=>b.update(dt)); enemyBullets.forEach(b=>b.update(dt)); enemies.forEach(e=>e.update(dt)); powerUps.forEach(p=>p.update(dt));
 
-    // colisiones: balas jugador vs enemigos
-    for(const b of bullets){ if(b.dead) continue; for(const e of enemies){ if(e.dead) continue; if(b.intersects(e)){ b.dead=true; e.hp--; if(e.hp<=0){ e.dead=true; score+=e.spec.score||50; play(e.spec.deathSound); if(!hasWon && score>=WIN_SCORE){ triggerWin(); } } break; } } }
+    // Balas jugador vs enemigos
+    for(const b of bullets){ if(b.dead) continue; for(const e of enemies){ if(e.dead) continue; if(b.intersects(e)){ b.dead=true; e.hp--; if(e.hp<=0){ e.dead=true; score+=e.spec.score||50; play(e.spec.deathSound); if(!hasWon&&score>=WIN_SCORE) triggerWin(); } break; } } }
 
     // colisiones: balas enemigo vs jugador
     for(const eb of enemyBullets){ if(!eb.dead && eb.intersects(player)){ eb.dead=true; if(player.hasShield()){ /* absorbido */ } else { player.hp--; if(player.hp<=0){ gameOver=true; play(CONFIG.player.deathSound); } } } }
@@ -197,7 +180,7 @@ async function playBackgroundMusic() {
     // colisiones: enemigo vs jugador
     for(const e of enemies){ if(!e.dead && e.intersects(player)){ e.dead=true; if(player.hasShield()){ /* absorbido */ } else { player.hp--; if(player.hp<=0){ gameOver=true; play(CONFIG.player.deathSound); } } } }
 
-    // colisiones: powerups
+    // Power-ups
     for(const pu of powerUps){ if(!pu.dead && pu.intersects(player)){ pu.dead=true; player.applyPowerUp(pu.spec); } }
 
     prune(bullets); prune(enemyBullets); prune(enemies); prune(powerUps);
@@ -206,56 +189,33 @@ async function playBackgroundMusic() {
 
   function draw(){
     drawStars();
-    // HUD bar
+    // HUD
     ctx.fillStyle='rgba(0,0,0,.35)'; ctx.fillRect(0,0,W,34);
-    ctx.fillStyle='#cfe8ff'; ctx.font='bold 14px system-ui,Arial'; ctx.textAlign='left';
-    ctx.fillText(`Puntos: ${score}`, 10, 22);
-    ctx.textAlign='right';
-    ctx.fillText(`Vidas: ${Math.max(0,player.hp)}`, W-10, 22);
+    ctx.fillStyle='#fff'; ctx.font='bold 14px system-ui,Arial'; ctx.textAlign='left'; ctx.fillText(`Puntos: ${score}`, 10, 22);
+    ctx.textAlign='right'; ctx.fillText(`Vidas: ${Math.max(0,player.hp)}`, W-10, 22);
 
-    // Power-up badges (derecha)
-    ctx.textAlign='right'; ctx.font='12px system-ui,Arial';
-    let y=50; if(player.spread){ ctx.fillText('SPREAD', W-10, y); y+=16; }
-    if(player.fireRate < player.baseFireRate){ ctx.fillText('RAPID', W-10, y); y+=16; }
-    if(player.hasShield()){ ctx.fillText('SHIELD', W-10, y); y+=16; }
+    // Badges de power-up
+    ctx.textAlign='right'; ctx.font='12px system-ui,Arial'; let y=50; if(player.spread){ ctx.fillText('SPREAD', W-10, y); y+=16; } if(player.fireRate < player.baseFireRate){ ctx.fillText('RAPID', W-10, y); y+=16; } if(player.hasShield()){ ctx.fillText('SHIELD', W-10, y); y+=16; }
 
     player.draw(); bullets.forEach(b=>b.draw()); enemyBullets.forEach(b=>b.draw()); enemies.forEach(e=>e.draw()); powerUps.forEach(p=>p.draw());
 
-    if(gameOver){ ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(0,0,W,H); ctx.fillStyle='#fff'; ctx.font='bold 28px system-ui,Arial'; ctx.textAlign='center'; ctx.fillText('GAME OVER', W/2, H/2-10); ctx.font='16px system-ui,Arial'; ctx.fillText('Presiona R para reiniciar', W/2, H/2+20); if(winBtn) winBtn.classList.remove('show'); return; }
+    if(gameOver){ ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(0,0,W,H); ctx.fillStyle='#fff'; ctx.font='bold 28px system-ui,Arial'; ctx.textAlign='center'; ctx.fillText('GAME OVER', W/2, H/2-10); ctx.font='16px system-ui,Arial'; ctx.fillText('Presiona R para reiniciar', W/2, H/2+20); if(winBtn) winBtn.classList.remove('show'); showRestartButton(); return; }
 
-    if(hasWon){
-      // capa de victoria
-      ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(0,0,W,H);
-      ctx.textAlign='center';
-      // avión grande
-      if(CONFIG.player.image){
-        const iw=220, ih=260; ctx.drawImage(CONFIG.player.image, (W-iw)/2, H*0.24, iw, ih);
-      } else {
-        const dummy = new Entity(W/2-110, H*0.24, 220, 260); drawPlane(dummy, null, '#4ec9f0', true);
-      }
-      ctx.fillStyle='#fff'; ctx.font='bold 30px system-ui,Arial';
-      ctx.fillText('Lo Lograste!!', W/2, H*0.24 + 400);
-      if(winBtn) winBtn.classList.add('show');
-      return;
-    } else {
-      if(winBtn) winBtn.classList.remove('show');
-    }
+    if(hasWon){ ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillRect(0,0,W,H); ctx.textAlign='center'; if(CONFIG.player.image){ const iw=220, ih=260; ctx.drawImage(CONFIG.player.image, (W-iw)/2, H*0.24, iw, ih); } else { const dummy = new Entity(W/2-110, H*0.24, 220, 260); drawPlane(dummy, null, '#4ec9f0', true); } ctx.fillStyle='#fff'; ctx.font='bold 30px system-ui,Arial'; ctx.fillText('¡Lo lograste!', W/2, H*0.24 + 400); if(winBtn) winBtn.classList.add('show'); hideRestartButton(); return; } else { if(winBtn) winBtn.classList.remove('show'); hideRestartButton(); }
   }
 
-  // fondo estrellas
+  // Fondo de estrellas
   const stars = Array.from({length:DEFAULTS.background.stars},()=>({x:Math.random()*W,y:Math.random()*H,s:Math.random()*2+0.5,v:Math.random()*40+20}));
   function drawStars(){ ctx.fillStyle='#0a1430'; ctx.fillRect(0,0,W,H); ctx.fillStyle='#e6f2ff'; for(const st of stars){ ctx.globalAlpha=0.6; ctx.fillRect(st.x,st.y,st.s,st.s); st.y+=st.v/60; if(st.y>H){ st.y=-2; st.x=Math.random()*W; } } ctx.globalAlpha=1; }
 
-  function restart(){ enemies.length=0; bullets.length=0; enemyBullets.length=0; powerUps.length=0; score=0; player.resetStats(); player.x=W/2-20; player.y=H-110; gameOver=false; hasWon=false; if(winBtn) winBtn.classList.remove('show');playBackgroundMusic(); }
+  function restart(){ enemies.length=0; bullets.length=0; enemyBullets.length=0; powerUps.length=0; score=0; player.resetStats(); player.x=W/2-20; player.y=H-110; gameOver=false; hasWon=false; if(winBtn) winBtn.classList.remove('show'); hideRestartButton(); playBackgroundMusic(); }
 
-function triggerWin() {
-  hasWon = true;
-  if (bgMusic) bgMusic.pause(); // detener música fondo
-  playMusic(CONFIG.musicVictory);
-  ensureWinButton();
-}
-
+  function triggerWin(){ hasWon=true; if(bgMusic) bgMusic.pause(); playMusic(CONFIG.musicVictory); ensureWinButton(); }
   function ensureWinButton(){ if(winBtn) return; winBtn = document.createElement('a'); winBtn.id='winBtn'; winBtn.className='winbtn'; winBtn.textContent='Continuar'; winBtn.href = REDIRECT_URL; document.body.appendChild(winBtn); }
+
+  function showRestartButton(){ if(btnRestart){ btnRestart.style.display='inline-block'; } }
+  function hideRestartButton(){ if(btnRestart){ btnRestart.style.display='none'; } }
+  btnRestart?.addEventListener('click', ()=> restart());
 
   // --- inicio ---
   
@@ -269,6 +229,4 @@ function triggerWin() {
   </script>
 </body>
 </html>
-
-
 
