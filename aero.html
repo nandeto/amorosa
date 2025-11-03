@@ -135,10 +135,32 @@
     await Promise.all(loaders);
   }
 
-  // Música (sin sonido de derrota)
-  let bgMusic = null;
-  function playMusic(cfg){ if(!cfg || !cfg.url) return null; const a=new Audio(cfg.url); a.loop=!!cfg.loop; a.volume=cfg.volume??0.5; a.play().catch(()=>{}); return a; }
-  async function playBackgroundMusic(){ if(!CONFIG.music || !CONFIG.music.url) return; if(!bgMusic) bgMusic=new Audio(CONFIG.music.url); bgMusic.loop=CONFIG.music.loop!==false; bgMusic.volume=CONFIG.music.volume??0.5; try{await bgMusic.play();}catch(e){const kick=()=>bgMusic.play().catch(()=>{});document.body.addEventListener('click',kick,{once:true});document.body.addEventListener('keydown',kick,{once:true});} }
+ // ===== Música de fondo / victoria / game over =====
+let bgMusic = null;
+
+function playMusic(cfg) {
+  if (!cfg || !cfg.url) return null;
+  const a = new Audio(cfg.url);
+  a.loop = !!cfg.loop;
+  a.volume = cfg.volume ?? 0.5;
+  a.play().catch(()=>{}); // por si el navegador bloquea autoplay
+  return a;
+}
+
+async function playBackgroundMusic() {
+  if (!CONFIG.music || !CONFIG.music.url) return;
+  if (!bgMusic) bgMusic = new Audio(CONFIG.music.url);
+  bgMusic.loop = CONFIG.music.loop !== false;
+  bgMusic.volume = CONFIG.music.volume ?? 0.5;
+  try {
+    await bgMusic.play();
+  } catch (e) {
+    // Requiere interacción del usuario (clic/tecla)
+    const kick = () => bgMusic.play().catch(()=>{});
+    document.body.addEventListener('click', kick, { once: true });
+    document.body.addEventListener('keydown', kick, { once: true });
+  }
+}
 
   // ---------- Entidades ----------
   class Entity{ constructor(x,y,w,h){ this.x=x; this.y=y; this.w=w; this.h=h; this.dead=false;} get cx(){return this.x+this.w/2} get cy(){return this.y+this.h/2} intersects(o){return !(this.x+this.w<o.x||this.x>o.x+o.w||this.y+this.h<o.y||this.y>o.y+o.h)} }
