@@ -109,7 +109,7 @@ button:hover {
 .login-container {
   width: min(96vw, 420px);   /* más ancho, pero aún adaptable */
   margin: 60px auto;         /* más espacio arriba/abajo */
-  padding: 28px 24px;        /* más aire lateral */
+  padding: 28px 10px;        /* más aire lateral */
   border-radius: 14px;
   box-shadow: 0 10px 40px rgba(0,0,0,.28);
 }
