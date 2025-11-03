@@ -36,8 +36,8 @@ h1 {
 }
 
 input[type="text"] {
-  width: 100%;
-  padding: 10px;
+  width: 300px;
+  padding: 20px;
   margin-bottom: 20px;
   background-color: #fff;
   border: 2px solid #ccc;
@@ -94,3 +94,57 @@ button:hover {
 .fade-out {
   animation: fadeOut 2s ease-in-out forwards;
 }
+/* --- Compatibilidad móvil sin alterar escritorio --- */
+@media (max-width: 600px) {
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;              /* evita 2da barra horizontal */
+  }
+
+  body {
+    min-height: 100svh;              /* cubre alto real en móviles */
+    padding: 16px;                   /* respiración en bordes */
+  }
+
+.login-container {
+  width: min(96vw, 420px);   /* más ancho, pero aún adaptable */
+  margin: 60px auto;         /* más espacio arriba/abajo */
+  padding: 28px 24px;        /* más aire lateral */
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.28);
+}
+
+  h1 {
+    font-size: clamp(22px, 7vw, 28px);
+    margin-bottom: 14px;
+  }
+
+  input[type="text"] {
+    font-size: clamp(16px, 4.5vw, 18px);
+    padding: 12px;
+  }
+
+  button {
+    font-size: clamp(16px, 4.8vw, 18px);
+    padding: 12px 14px;
+    border-radius: 12px;
+    touch-action: manipulation;
+  }
+
+  /* Mensajes más legibles y que no rompan el layout */
+  .error-message,
+  .success-message {
+    font-size: clamp(14px, 4.2vw, 16px);
+    word-break: break-word;
+    margin-top: 12px;
+  }
+}
+
+/* Respeta zonas seguras (iPhone con notch) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body { padding-bottom: calc(env(safe-area-inset-bottom) + 8px); }
+}
+
+/* Feedback táctil suave (sin depender de :hover) */
+button:active { transform: scale(.98); transition: transform .08s; }
+

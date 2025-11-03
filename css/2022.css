@@ -512,3 +512,117 @@ html.fade-out *,
 #heartLayer.fade-out {
   animation: fadeOut 2s ease-in-out forwards;
 }
+/* ====== MOBILE-FIRST: TIPOGRAFÍA FLUIDA Y ESPACIOS ====== */
+:root{
+  --space: clamp(12px, 3.5vw, 24px);
+}
+
+html { font-size: 16px; }
+body { font-size: clamp(16px, 3.8vw, 20px); }
+
+/* Encabezados adaptativos */
+.header, .footer {
+  padding: clamp(28px, 7vw, 80px) var(--space);
+  -webkit-text-stroke: 2px black; /* más suave en móviles */
+}
+
+.header h1, .footer h1 {
+  font-size: clamp(130px, 8vw, 56px);
+}
+
+/* Icono flecha */
+.header i.fa, .footer i.fa {
+  font-size: clamp(130px, 10vw, 64px);
+}
+
+/* Secciones: que respiren y no se “aprieten” */
+.section {
+  font-size: clamp(18px, 4.5vw, 25px);
+}
+.section .left, .section .middle, .section .right {
+  padding: var(--space);
+}
+
+/* Cuadrícula de fotos: 1 columna en móvil, 2 en pantallas medias */
+.section .tiles {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: var(--space);
+}
+@media (min-width: 320px) {
+  .section .tiles { grid-template-columns: 1fr 1fr; }
+}
+.section .tiles img {
+  width: 100%;
+  height: auto;
+  filter: grayscale(100%);
+  opacity: .85;
+  transition: .3s;
+}
+.section .tiles img:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+/* El carril central no “corta” la imagen en móvil */
+.section .middle {
+  padding: 0;
+  background: slategray;
+}
+
+.footer {
+  background: #ee8f8f;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  padding: clamp(28px, 7vw, 80px) var(--space);
+  -webkit-text-stroke: 2px black;
+}
+
+/* Centrado perfecto y con espacio adicional */
+.button {
+  position: absolute;
+  top: 60%; /* antes 50%, lo baja un poco */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto; /* ya no ocupa todo el ancho */
+  margin: 0;
+}
+
+/* El contenido define el tamaño */
+.button .content {
+  display: inline-block;
+  background: #ef2e52;
+  padding: 0.6rem 1.6rem;
+  border-radius: 0.4rem;
+}
+
+/* Texto con tamaño adaptable */
+.button .content p {
+  font-size: clamp(28px, 9vw, 60px);
+  -webkit-text-stroke: 1px #fff;
+  margin: 0;
+  white-space: nowrap; /* evita saltos de línea */
+}
+/* Hace que el footer siempre cubra visualmente el área completa */
+.footer {
+  min-height: 25vh; /* asegúrate de que tenga altura visible */
+  position: relative;
+  padding-bottom: 60px; /* deja espacio bajo el botón */
+}
+
+/* Evita que el botón sobresalga del fondo rosa */
+.button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Ajusta el color para asegurar que cubra hasta el final */
+body {
+  background-color: #f7b5b5;
+}
+
+

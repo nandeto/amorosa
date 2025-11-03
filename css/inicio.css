@@ -42,7 +42,7 @@ body {
     position: absolute;
     width: 90%;
     height: 82%;
-    background-image: conic-gradient(from var(--angle), #f8a5b3, #fc7fa1, #ff7db1, #e9597f, #e56a82, #f8a5b3);
+    
     top: 50%;
     left: 50%;
     translate: -50% -50%;
@@ -379,3 +379,144 @@ html.fade-out *,
 #heartLayer.fade-out {
   animation: fadeOut 2s ease-in-out forwards;
 }
+/* ==== COMPATIBILIDAD MÓVIL (sin alterar escritorio) ==== */
+@media (max-width: 650px) {
+
+  html, body {
+    max-width: 100%;
+    overflow-x: hidden;             /* evita doble scroll */
+  }
+
+  body {
+    min-height: 100svh;             /* alto real en móviles */
+    padding: 16px;                  /* respiración lateral */
+    box-sizing: border-box;
+  }
+
+  .container-wrapper {
+    display: block;
+    padding: 20px 0;
+  }
+
+  .container {
+    width: min(94vw, 600px);        /* ancho adaptable */
+    padding: 24px 20px;
+    margin: 0 auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  }
+
+  h1 {
+    font-size: clamp(24px, 7vw, 34px);
+    margin-bottom: 16px;
+    word-break: break-word;
+  }
+
+  p {
+    font-size: clamp(16px, 4.5vw, 20px);
+    line-height: 1.5;
+  }
+
+  /* Botón centrado y táctil */
+  .button {
+    width: auto;
+    min-width: 140px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 24px;
+  }
+
+  .button .content p {
+    font-size: clamp(18px, 5vw, 24px);
+    padding: 10px 18px;
+  }
+
+  .button .content {
+    border-radius: 8px;
+    padding: 0.4rem 1.4rem;
+  }
+
+  .button:after {
+    border-radius: 8px;
+  }
+
+  /* Ajuste del efecto de partículas para que no se salga del viewport */
+  .button .particles .particle {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  /* Menos movimiento en pantallas pequeñas */
+  @media (prefers-reduced-motion: reduce) {
+    .button .particles .particle,
+    html.fade-out * {
+      animation: none !important;
+    }
+  }
+}
+
+/* Respeta safe-area (iPhone notch, etc.) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 10px);
+  }
+}
+/* 1) Evita que el padding sume ancho extra (y cause corte a la derecha) */
+*, *::before, *::after { box-sizing: border-box; }
+
+/* 2) Asegura que los pseudo-elementos se posicionen dentro del cuadro */
+.container { position: relative; }
+
+/* 3) (typo) corrige la opacidad del glow */
+.container::before { opacity: 0.5; }
+
+/* 4) Ajustes solo para móvil */
+@media (max-width: 650px) {
+  .container-wrapper {
+    display: block;
+    width: 100%;
+    padding: 20px 0;
+  }
+
+  /* ancho fluido + padding SIN pasarse de 100vw */
+  .container {
+    width: min(94vw, 600px);
+    padding: 24px 20px;
+    margin: 0 auto;
+    border-radius: 14px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+    /* box-sizing ya está global */
+    overflow: hidden; /* opcional: recorta el glow si aún se sale */
+  }
+
+  /* El botón hereda top:50% del desktop; en móvil lo quitamos */
+  .button {
+    top: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    min-width: 140px;
+    margin-top: 24px;
+  }
+}
+@media (max-width: 650px) {
+  .container { width: min(92vw, 600px); }
+}
+/* Asegura que el contenido quede por encima del marco radial */
+.container {
+  position: relative;     /* crea contexto */
+  z-index: 0;             /* stacking context propio */
+  isolation: isolate;     /* evita que -1 se vaya detrás de todo el documento */
+  background: #fff;       /* caja blanca del texto */
+  overflow: hidden;       /* recorta el glow si se sale */
+}
+
+/* El marco radial siempre por detrás del contenido */
+.container::before,
+.container::after {
+  z-index: -1;
+}
+
+/* Corrige typo de opacidad del glow */
+.container::before { opacity: 0.5; }
+

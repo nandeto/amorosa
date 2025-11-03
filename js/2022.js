@@ -1,18 +1,19 @@
+// 2022.js
 $(document).ready(function(){
+  var $sm = 600;   // antes 480
+  var $md = 768;
 
-   var $sm = 480;
-   var $md = 768;
+  function resizeThis() {
+    if ($(window).width() >= $sm) {
+      const $imgH = $('.middle img').width();
+      $('.left,.right,.section').css('height', $imgH);
+    } else {
+      $('.left,.right,.section').css('height', 'auto'); // móvil: libre
+    }
+  }
 
-   function resizeThis() {
-      $imgH = $('.middle img').width();
-      if ($(window).width() >= $sm) {
-         $('.left,.right,.section').css('height', $imgH);
-      } else {
-         $('.left,.right,.section').css('height', 'auto');
-      }
-   }
-
-   resizeThis();
+  resizeThis();
+  $(window).on('resize', resizeThis);
 
    $(window).resize(function(){
       resizeThis();

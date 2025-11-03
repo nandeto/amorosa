@@ -10,12 +10,12 @@ $(document).ready(() => {
     .click(() => {
       $(".button .particles").addClass("animate");
 
-      // 🔹 Aquí agregas el fade out:
+      // 🔹 Fade out original (afecta html, body y #heartLayer)
       $("html, body, #heartLayer").addClass("fade-out");
 
-      // 🔹 Espera 1s (la duración del fade) antes de redirigir
+      // 🔹 Espera 2s antes de redirigir (coincide con animación CSS)
       setTimeout(() => {
-        window.location.href = "2023.html"; // tu siguiente página
+        window.location.href = "2023.html";
       }, 2000);
     });
 });
