@@ -95,57 +95,69 @@
   function play(sound){ if(sound){ try{ sound.currentTime=0; sound.play(); }catch(e){} } }
 
   async function applyConfigFromBackend(){
-    try{
-      const r = await fetch('./config.json', {cache:'no-store'}); // <- relativo
-      if(r.ok){
-        const data = await r.json();
-        // normalizar rutas que vengan con /assets
-        if (data.player) {
-          if (data.player.image) data.player.image = norm(data.player.image);
-          if (data.player.bullet?.image) data.player.bullet.image = norm(data.player.bullet.image);
-          if (data.player.bullet?.sound) data.player.bullet.sound = norm(data.player.bullet.sound);
-          if (data.player.deathSound) data.player.deathSound = norm(data.player.deathSound);
-        }
-        if (Array.isArray(data.enemies)) {
-          data.enemies = data.enemies.map(e=>{
-            if(e.image) e.image = norm(e.image);
-            if(e.bullet?.image) e.bullet.image = norm(e.bullet.image);
-            if(e.bullet?.sound) e.bullet.sound = norm(e.bullet.sound);
-            if(e.deathSound) e.deathSound = norm(e.deathSound);
-            return e;
-          });
-        }
-        if (Array.isArray(data.powerUps)) {
-          data.powerUps = data.powerUps.map(p=>{ if(p.image) p.image = norm(p.image); return p; });
-        }
-        if (data.music?.url) data.music.url = norm(data.music.url);
-        if (data.musicVictory?.url) data.musicVictory.url = norm(data.musicVictory.url);
-
-        Object.assign(CONFIG.player, data.player||{});
-        if(Array.isArray(data.enemies)) CONFIG.enemies = data.enemies.map((e,i)=>Object.assign({}, DEFAULTS.enemies[i]||DEFAULTS.enemies[0], e));
-        if(Array.isArray(data.powerUps)) CONFIG.powerUps = data.powerUps.map(p=>Object.assign({}, p));
-        Object.assign(CONFIG.spawn, data.spawn||{});
-        Object.assign(CONFIG.background, data.background||{});
-        CONFIG.music         = data.music         || CONFIG.music;
-        CONFIG.musicVictory  = data.musicVictory  || CONFIG.musicVictory;
-      }
-    }catch(e){}
-
-    const loaders=[];
-    loaders.push(loadImage(CONFIG.player.image).then(img=>{CONFIG.player.image=img;}));
-    loaders.push(loadImage(CONFIG.player.bullet && CONFIG.player.bullet.image).then(img=>{ if(CONFIG.player.bullet) CONFIG.player.bullet.image=img; }));
-    loaders.push(loadSound(CONFIG.player.bullet && CONFIG.player.bullet.sound).then(a=>{ if(CONFIG.player.bullet) CONFIG.player.bullet.sound=a; }));
-    loaders.push(loadSound(CONFIG.player.deathSound).then(a=>{ CONFIG.player.deathSound=a; }));
-
-    CONFIG.enemies.forEach(e=>{
-      loaders.push(loadImage(e.image).then(img=>{ e.image=img; }));
-      loaders.push(loadImage(e.bullet && e.bullet.image).then(img=>{ if(e.bullet) e.bullet.image=img; }));
-      loaders.push(loadSound(e.bullet && e.bullet.sound).then(a=>{ if(e.bullet) e.bullet.sound=a; }));
-      loaders.push(loadSound(e.deathSound).then(a=>{ e.deathSound=a; }));
-    });
-    CONFIG.powerUps.forEach(p=>{ loaders.push(loadImage(p.image).then(img=>{ p.image=img; })); });
-    await Promise.all(loaders);
+  // 1) lee config rápido
+  const r = await fetch('./config.json', { cache: 'reload' }).catch(()=>null);
+  if (r?.ok) {
+    const data = await r.json();
+    // (normaliza rutas como ya lo haces)
+    Object.assign(CONFIG.player, data.player||{});
+    if (Array.isArray(data.enemies)) CONFIG.enemies = data.enemies;
+    if (Array.isArray(data.powerUps)) CONFIG.powerUps = data.powerUps;
+    Object.assign(CONFIG.spawn, data.spawn||{});
+    Object.assign(CONFIG.background, data.background||{});
+    CONFIG.music        = data.music        || CONFIG.music;
+    CONFIG.musicVictory = data.musicVictory || CONFIG.musicVictory;
   }
+
+  // 2) CARGA CRÍTICA: solo lo necesario para ver el juego YA
+  const critical = [];
+  critical.push(loadImage(CONFIG.player.image).then(img=>{ CONFIG.player.image=img; }));
+  if (CONFIG.player.bullet) {
+    critical.push(loadImage(CONFIG.player.bullet.image).then(i=>{ CONFIG.player.bullet.image=i; }));
+    // el sonido del disparo lo podemos diferir (más abajo)
+  }
+  await Promise.all(critical); // <- arranca con esto
+
+  // 3) CARGA DIFERIDA: el resto sin frenar el primer frame
+  queueDeferredPreload();
+}
+
+// Diferido sin bloquear: usa requestIdleCallback si existe, si no setTimeout
+function queueDeferredPreload(){
+  const run = () => deferredPreload();
+  if ('requestIdleCallback' in window) requestIdleCallback(run, {timeout: 2000});
+  else setTimeout(run, 0);
+}
+
+async function deferredPreload(){
+  const jobs = [];
+
+  // sonidos player
+  if (CONFIG.player.bullet?.sound)
+    jobs.push(loadSound(CONFIG.player.bullet.sound).then(a=>{ CONFIG.player.bullet.sound=a; }));
+  if (CONFIG.player.deathSound)
+    jobs.push(loadSound(CONFIG.player.deathSound).then(a=>{ CONFIG.player.deathSound=a; }));
+
+  // enemigos y powerups
+  (CONFIG.enemies||[]).forEach(e=>{
+    jobs.push(loadImage(e.image).then(i=>{ e.image=i; }));
+    if (e.bullet?.image) jobs.push(loadImage(e.bullet.image).then(i=>{ e.bullet.image=i; }));
+    if (e.bullet?.sound) jobs.push(loadSound(e.bullet.sound).then(a=>{ e.bullet.sound=a; }));
+    if (e.deathSound)    jobs.push(loadSound(e.deathSound).then(a=>{ e.deathSound=a; }));
+  });
+  (CONFIG.powerUps||[]).forEach(p=>{
+    if (p.image) jobs.push(loadImage(p.image).then(i=>{ p.image=i; }));
+  });
+
+  // música (Safari puede bloquear .play; solo la decodificamos aquí)
+  if (CONFIG.music?.url) {
+    // no hagas play aquí; deja que playBackgroundMusic() lo intente luego
+    // esto fuerza la descarga al caché de medios
+    const a = new Audio(CONFIG.music.url); a.preload = 'auto';
+  }
+
+  await Promise.allSettled(jobs);
+}
 
  // ===== Música de fondo / victoria / game over =====
 let bgMusic = null;
@@ -327,3 +339,4 @@ overlay.addEventListener('pointerdown', async () => {
   </script>
 </body>
 </html>
+
